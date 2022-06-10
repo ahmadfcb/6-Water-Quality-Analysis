@@ -1,0 +1,60 @@
+---
+title: "waterQualityAnalysis"
+author: "18F-0178_M Mustafa Ali"
+date: "1/16/2022"
+output: pdf_document
+---
+
+```{r }
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(caret)
+library(Hmisc)
+data<-read.csv("water_potability.csv")
+head(data)
+data<-data[rowSums(is.na(data)) == 0,]
+counts<-table(data$Potability)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+barplot(counts, main="Distribution of Unsafe and Safe Water",xlab="Potability",col=counts)
+ggplot(data,aes(x=ph))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Hardness))+geom_histogram(aes(fill=factor(Potability)),position ="identity",binwidth=5)+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Solids))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Chloramines))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Sulfate))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Conductivity))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Organic_carbon))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Trihalomethanes))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Turbidity))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+mat<-data.matrix(data,rownames.force = NA)
+correlation<-rcorr(mat)
+correlation
+allmodels<-paste(names(getModelInfo()), collapse=',  ')
+allmodels
+modelLookup("rf")
+modelLookup("earth")
+model = train(Potability ~ ., data = data, method='rf')
+model
+plot(model)
+predicted <- predict(model,data)
+predicted
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

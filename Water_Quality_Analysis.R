@@ -1,0 +1,32 @@
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(tidyr)
+library(caret)
+library(Hmisc)
+data<-read.csv("water_potability.csv")
+head(data)
+data<-data[rowSums(is.na(data)) == 0,]
+counts<-table(data$Potability)
+barplot(counts, main="Distribution of Unsafe and Safe Water",xlab="Potability",col=counts)
+ggplot(data,aes(x=ph))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Hardness))+geom_histogram(aes(fill=factor(Potability)),position ="identity",binwidth=5)+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Solids))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Chloramines))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Sulfate))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Conductivity))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Organic_carbon))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Trihalomethanes))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+ggplot(data,aes(x=Turbidity))+geom_histogram(aes(fill=factor(Potability)),position ="identity")+labs(fill="Potability",y="Count")
+mat<-data.matrix(data,rownames.force = NA)
+correlation<-rcorr(mat)
+correlation
+allmodels<-paste(names(getModelInfo()), collapse=',  ')
+allmodels
+modelLookup("rf")
+modelLookup("earth")
+model = train(Potability ~ ., data = data, method='rf')
+model
+plot(model)
+predicted <- predict(model,data)
+predicted
